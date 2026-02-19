@@ -11,11 +11,14 @@ Or:
 from __future__ import annotations
 
 import logging
+import os
+from pathlib import Path
 import uvicorn
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from backend.config import SimConfig
 from backend.sim_manager import SimManager
@@ -76,6 +79,25 @@ app.add_middleware(
 # Mount routers
 app.include_router(rest_routes.router)
 app.include_router(ws_routes.router)
+
+
+# ─── Serve React frontend (production build) ─────────────
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+if STATIC_DIR.is_dir():
+    # Serve static assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
+    # Serve other static files (vite.svg, etc.)
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static-root")
+
+    from fastapi.responses import FileResponse
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        """Catch-all: serve index.html for any non-API/WS route (SPA routing)."""
+        file = STATIC_DIR / full_path
+        if file.is_file():
+            return FileResponse(file)
+        return FileResponse(STATIC_DIR / "index.html")
 
 
 # ─── Health check ─────────────────────────────────────────
