@@ -5,6 +5,7 @@
 import { useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useWebSocket } from "./hooks/useWebSocket";
+import { useCoPilot } from "./hooks/useCoPilot";
 import Sidebar from "./components/Navigation/Sidebar";
 import HomePage from "./pages/HomePage";
 import TwinPage from "./pages/TwinPage";
@@ -21,6 +22,7 @@ const pageTransition = { duration: 0.35, ease: [0.4, 0, 0.2, 1] };
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const { state, history, status, simStatus, sendCmd, clearHistory } = useWebSocket();
+  const { alerts, clearAlerts } = useCoPilot(state);
 
   const navigate = useCallback((tab) => setActiveTab(tab), []);
 
@@ -56,7 +58,7 @@ export default function App() {
               exit="exit"
               transition={pageTransition}
             >
-              <TwinPage state={state} simStatus={simStatus} sendCmd={sendCmd} history={history} />
+              <TwinPage state={state} simStatus={simStatus} sendCmd={sendCmd} history={history} alerts={alerts} clearAlerts={clearAlerts} />
             </motion.div>
           )}
 

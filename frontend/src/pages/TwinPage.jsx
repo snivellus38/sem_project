@@ -1,8 +1,8 @@
 ﻿/**
- * TwinPage.jsx - Combined Digital Twin + Analytics.
+ * TwinPage.jsx - Combined Digital Twin + Analytics + AI Co-Pilot.
  *
- * Layout:  Left  (55%) = full 3D scene + floating sim controls
- *          Right (45%) = scrollable analytics panel (stats, charts, gauges, sensors)
+ * Layout:  Left  (55%) = full 3D scene + floating sim controls + Co-Pilot feed
+ *          Right (45%) = scrollable analytics panel (stats, charts, cost dashboard, gauges, sensors)
  */
 
 import { useState } from "react";
@@ -10,12 +10,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Settings, X, Play, Pause, Square, RotateCcw, Flame, Wind, Timer,
   Droplets, Thermometer, Leaf, Activity, Beaker, ChevronLeft, ChevronRight,
+  Zap,
 } from "lucide-react";
 import Scene3D from "../components/Scene3D/Scene3D";
 import QualityCard from "../components/Dashboard/QualityCard";
 import AnimatedNumber from "../components/AnimatedNumber";
 import Gauge from "../components/Dashboard/Gauge";
 import { MoistureChart, TemperatureChart, QualityChart } from "../components/Dashboard/Charts";
+import CostDashboard from "../components/Dashboard/CostDashboard";
+import CoPilotFeed from "../components/Dashboard/CoPilotFeed";
 
 /*  Animation helpers  */
 const stagger = {
@@ -51,7 +54,7 @@ const SPEEDS = [1, 2, 5, 10, 25, 50];
 /* 
    Main Component
     */
-export default function TwinPage({ state, simStatus, sendCmd, history }) {
+export default function TwinPage({ state, simStatus, sendCmd, history, alerts, clearAlerts }) {
   const [panelOpen, setPanelOpen] = useState(true);
   const [analyticsOpen, setAnalyticsOpen] = useState(true);
   const [inletTemp, setInletTemp] = useState(105);
@@ -202,6 +205,11 @@ export default function TwinPage({ state, simStatus, sendCmd, history }) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Floating Co-Pilot Feed (bottom-left of 3D viewport) */}
+        <div className="absolute bottom-4 left-4 z-10 w-[320px]">
+          <CoPilotFeed alerts={alerts} onClear={clearAlerts} />
+        </div>
       </div>
 
       {/*  DIVIDER: analytics toggle  */}
@@ -245,6 +253,11 @@ export default function TwinPage({ state, simStatus, sendCmd, history }) {
                   <Stat label="Airflow" value={af} unit="%" icon={Wind} color="#60a5fa" decimals={0} />
                   <Stat label="Enzyme" value={enzyme} unit="%" icon={Leaf} color="#a78bfa" />
                   <Stat label="Pyrazine" value={pyrazine} unit="µg/g" icon={Beaker} color="#4ade80" decimals={2} />
+                </div>
+
+                {/* Live Cost Dashboard */}
+                <div className="mb-3">
+                  <CostDashboard state={state} />
                 </div>
 
                 {/* Moisture chart */}

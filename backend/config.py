@@ -76,6 +76,16 @@ DEFAULT_AIRFLOW = 1.0     # normalised (0–1 damper position)
 BED_TEMP_LAG_TAU = 2.0     # minutes — first-order lag from inlet → bed temp
 AMBIENT_TEMP = 28.0    # °C (Assam average)
 
+# Energy model
+#   Heater power approximation for a small FBD:
+#   P(kW) = BASE_HEATER_KW × (T_inlet / 100)^1.3 × airflow
+#   Fan/blower adds a fixed parasitic draw scaled by airflow.
+BATCH_SIZE_KG = 50.0       # kg wet tea per batch
+BASE_HEATER_KW = 18.0      # kW at reference (100 °C, airflow = 1.0)
+FAN_POWER_KW = 2.5        # kW fan/blower at full airflow
+ELECTRICITY_RATE = 8.0     # ₹ per kWh (Indian industrial rate)
+TEA_VALUE_PER_KG = 350.0   # ₹ per kg of finished dry tea (CTC auction avg)
+
 # Simulation
 SIM_DT = 0.1     # minutes per physics tick
 SIM_DURATION = 30.0   # minutes — typical FBD drying cycle
@@ -155,6 +165,13 @@ class SimConfig:
     # Simulation
     dt: float = SIM_DT
     duration: float = SIM_DURATION
+
+    # Energy model
+    batch_size_kg: float = BATCH_SIZE_KG
+    base_heater_kw: float = BASE_HEATER_KW
+    fan_power_kw: float = FAN_POWER_KW
+    electricity_rate: float = ELECTRICITY_RATE
+    tea_value_per_kg: float = TEA_VALUE_PER_KG
 
     # Sensors
     enose_num_sensors: int = ENOSE_NUM_SENSORS
