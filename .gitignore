@@ -23,7 +23,13 @@ frontend/dist/
 Thumbs.db
 
 # LaTeX build artifacts
-report.aux
-report.log
-report.out
-report.toc
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+report.pdf
+report_1.pdf
+
+# Training artifacts
+logs/

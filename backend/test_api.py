@@ -157,6 +157,22 @@ def test_history():
     print(f"[PASS] history  ({len(hist)} entries)")
 
 
+def test_benchmark():
+    """Benchmark endpoint should return summary and trajectory payload."""
+    result = get("/api/benchmark")
+    assert "summary" in result, "Missing summary in benchmark response"
+    assert "trajectory" in result, "Missing trajectory in benchmark response"
+    assert isinstance(result["trajectory"], list), "Trajectory must be a list"
+    assert len(result["trajectory"]) > 10, "Trajectory too short"
+
+    rl = result["summary"].get("rl", {})
+    pid = result["summary"].get("pid", {})
+    delta = result["summary"].get("delta", {})
+    assert "tracking_mae_pct" in rl and "tracking_mae_pct" in pid
+    assert "energy_saved_pct" in delta
+    print("[PASS] benchmark endpoint")
+
+
 def test_full_run_to_completion():
     """Run sim at max speed and verify it finishes."""
     post("/api/reset")
@@ -241,6 +257,7 @@ if __name__ == "__main__":
     test_speed_change()
     test_snapshot()
     test_history()
+    test_benchmark()
     test_full_run_to_completion()
     test_websocket()
 

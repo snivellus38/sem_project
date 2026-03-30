@@ -3,6 +3,6 @@ services:
     name: aurasense
     runtime: docker
     plan: free
-    envVars:
-      - key: PORT
-        value: "10000"
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/status
+    autoDeploy: true

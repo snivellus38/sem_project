@@ -5,7 +5,9 @@
  * streaming (e.g., fetching full history, updating config).
  */
 
-const BASE = '/api';
+const getBackendUrl = () => '/api';
+
+const BASE = getBackendUrl();
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -30,6 +32,7 @@ export const api = {
   status:     ()             => request('/status'),
   snapshot:   ()             => request('/snapshot'),
   history:    ()             => request('/history'),
+  benchmark:  (model = null) => request(`/benchmark${model ? `?model=${encodeURIComponent(model)}` : ''}`),
   getConfig:  ()             => request('/config'),
   setConfig:  (cfg)          => request('/config', { method: 'POST', body: JSON.stringify(cfg) }),
 };

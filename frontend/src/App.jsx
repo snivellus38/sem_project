@@ -10,6 +10,7 @@ import Sidebar from "./components/Navigation/Sidebar";
 import HomePage from "./pages/HomePage";
 import TwinPage from "./pages/TwinPage";
 import ControlsPage from "./pages/ControlsPage";
+import BenchmarkPage from "./pages/BenchmarkPage";
 
 const pageVariants = {
   initial:  { opacity: 0, y: 24, scale: 0.98 },
@@ -73,6 +74,20 @@ export default function App() {
               transition={pageTransition}
             >
               <ControlsPage state={state} simStatus={simStatus} sendCmd={sendCmd} />
+            </motion.div>
+          )}
+
+          {activeTab === "benchmark" && (
+            <motion.div
+              key="benchmark"
+              className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={pageTransition}
+            >
+              <BenchmarkPage state={state} />
             </motion.div>
           )}
         </AnimatePresence>

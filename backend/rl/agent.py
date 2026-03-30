@@ -229,6 +229,9 @@ class DryerAgent:
         instance.eval_env = instance._make_env()
 
         path = MODELS_DIR / name
+        zip_path = MODELS_DIR / f"{name}.zip"
+        if zip_path.is_file():
+            path = zip_path
         algo_cls = cls.ALGOS[algo]
         instance.model = algo_cls.load(str(path), env=instance.env)
         print(f"Model loaded ← {path}")
@@ -246,19 +249,27 @@ class DryerAgent:
         stewing_flags = []
 
         for ep in range(n_episodes):
-            obs, info = self.eval_env.reset()
+            reset_out = self.eval_env.reset()
+            obs = reset_out[0] if isinstance(reset_out, tuple) else reset_out
             done = False
             ep_reward = 0.0
 
             while not done:
                 action, _ = self.model.predict(obs, deterministic=True)
-                obs, reward, terminated, truncated, info = self.eval_env.step(
-                    action)
-                # Handle vectorised env — info is a list of dicts
-                ep_reward += float(reward[0]) if hasattr(reward,
-                                                         '__len__') else float(reward)
-                done = terminated[0] if hasattr(
-                    terminated, '__len__') else terminated
+                step_out = self.eval_env.step(action)
+
+                # SB3 VecEnv commonly returns (obs, rewards, dones, infos),
+                # while some envs return Gymnasium-style 5-tuples.
+                if len(step_out) == 5:
+                    obs, reward, terminated, truncated, info = step_out
+                    dones = np.logical_or(terminated, truncated)
+                else:
+                    obs, reward, dones, info = step_out
+
+                reward_arr = np.asarray(reward).reshape(-1)
+                done_arr = np.asarray(dones).reshape(-1)
+                ep_reward += float(reward_arr[0])
+                done = bool(done_arr[0])
                 if render:
                     self.eval_env.render()
 

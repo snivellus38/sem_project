@@ -20,10 +20,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from backend.config import SimConfig
+from backend.rl.benchmark import run_benchmark
 
 router = APIRouter(prefix="/api", tags=["simulation"])
 
@@ -130,6 +131,13 @@ async def get_snapshot():
 async def get_history():
     """Get the full simulation history (array of state dicts)."""
     return _mgr().get_history()
+
+
+@router.get("/benchmark")
+async def get_benchmark(model: str | None = Query(None, description="Optional PPO model name under models/")):
+    """Run an offline RL-vs-PID benchmark using current simulation config."""
+    mgr = _mgr()
+    return run_benchmark(sim_cfg=mgr.cfg, model_name=model)
 
 
 @router.post("/controls")

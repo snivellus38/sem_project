@@ -1,0 +1,16 @@
+.git
+.vscode
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.pytest_cache
+**/.mypy_cache
+frontend/node_modules
+frontend/dist
+*.log
+*.aux
+*.out
+*.toc
+*.pdf
+report*
+Tea_Drying*

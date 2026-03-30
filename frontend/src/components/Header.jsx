@@ -13,10 +13,10 @@ export default function Header({ wsStatus }) {
     >
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-400 to-emerald-400 flex items-center justify-center text-white font-bold text-sm shadow-lg">
-          A
+          N
         </div>
         <div>
-          <h1 className="text-sm font-bold text-white tracking-wide">AuraSense</h1>
+          <h1 className="text-sm font-semibold tracking-[0.02em]"><span className="brand-neuraleaf">NeuraLeaf</span></h1>
           <p className="text-[10px] text-slate-400">Digital Twin · Fluidized Bed Dryer</p>
         </div>
       </div>
